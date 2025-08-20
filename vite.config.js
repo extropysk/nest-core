@@ -38,7 +38,6 @@ export default defineConfig({
         'reflect-metadata',
         'rxjs',
         '@nestjs/common',
-        '@nestjs/config',
         '@nestjs/core',
         '@nestjs/swagger',
       ],

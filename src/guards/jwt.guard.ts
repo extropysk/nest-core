@@ -1,14 +1,20 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
+import {
+  CanActivate,
+  ExecutionContext,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common'
 import type { Request } from 'express'
 import * as crypto from 'crypto'
 import * as jwt from 'jsonwebtoken'
+import { type Config, CONFIG } from '../providers'
 
 export const JWT_COOKIE_NAME = 'token'
 
 @Injectable()
 export class JwtGuard implements CanActivate {
-  constructor(private configService: ConfigService) {}
+  constructor(@Inject(CONFIG) private readonly config: Config) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest()
@@ -17,12 +23,11 @@ export class JwtGuard implements CanActivate {
       throw new UnauthorizedException()
     }
     try {
-      const secretConfig = this.configService.get<string>('jwt.secret')
-      if (!secretConfig) {
-        throw new Error('Secret not found')
-      }
-
-      const secret = crypto.createHash('sha256').update(secretConfig).digest('hex').slice(0, 32)
+      const secret = crypto
+        .createHash('sha256')
+        .update(this.config.secret)
+        .digest('hex')
+        .slice(0, 32)
 
       const payload = await jwt.verify(token, secret)
       if (typeof payload === 'string') {
