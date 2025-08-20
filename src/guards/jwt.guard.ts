@@ -45,14 +45,14 @@ export class JwtGuard implements CanActivate {
   }
 
   private extractToken(request: Request): string | null {
-    const token = request.cookies?.[JWT_COOKIE_NAME]
-    if (token) {
-      return token
-    }
-
     const [type, bearerToken] = request.headers.authorization?.split(' ') ?? []
     if (type === 'Bearer') {
       return bearerToken
+    }
+
+    const token = request.cookies?.[JWT_COOKIE_NAME]
+    if (token) {
+      return token
     }
 
     return null
