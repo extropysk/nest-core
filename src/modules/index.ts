@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { DynamicModule, Global, Module, Provider } from '@nestjs/common'
-import { JwtGuard, RolesGuard } from '../guards'
 import { CONFIG, Config } from '../providers'
 
 // required for DI in Auth decorator
@@ -15,8 +14,8 @@ export class CoreModule {
 
     return {
       module: CoreModule,
-      providers: [configProvider, JwtGuard, RolesGuard],
-      exports: [configProvider, JwtGuard, RolesGuard],
+      providers: [configProvider],
+      exports: [configProvider],
     }
   }
 
@@ -34,8 +33,8 @@ export class CoreModule {
     return {
       module: CoreModule,
       imports: options?.imports || [],
-      providers: [configProvider, JwtGuard, RolesGuard],
-      exports: [configProvider, JwtGuard, RolesGuard],
+      providers: [configProvider],
+      exports: [configProvider],
     }
   }
 }
