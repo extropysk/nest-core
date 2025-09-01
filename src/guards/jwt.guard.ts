@@ -9,15 +9,29 @@ import type { Request } from 'express'
 import * as crypto from 'crypto'
 import * as jwt from 'jsonwebtoken'
 import { type Config, CONFIG } from '../providers'
+import { Reflector } from '@nestjs/core'
+import { IS_PUBLIC_KEY } from '../decorators'
 
 export const JWT_COOKIE_NAME = 'token'
 
 @Injectable()
 export class JwtGuard implements CanActivate {
-  constructor(@Inject(CONFIG) private readonly config: Config) {}
+  constructor(
+    private reflector: Reflector,
+    @Inject(CONFIG) private readonly config: Config,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ])
+    if (isPublic) {
+      return true
+    }
+
     const request = context.switchToHttp().getRequest()
+
     const token = this.extractToken(request)
     if (!token) {
       throw new UnauthorizedException()

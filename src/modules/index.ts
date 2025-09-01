@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { DynamicModule, Global, Module, Provider } from '@nestjs/common'
+import { DynamicModule, Module, Provider } from '@nestjs/common'
 import { CONFIG, Config } from '../providers'
+import { APP_GUARD } from '@nestjs/core'
+import { JwtGuard, PoliciesGuard, RolesGuard } from '../guards'
 
-// required for DI in Auth decorator
-@Global()
 @Module({})
 export class CoreModule {
   static forRoot(config: Config): DynamicModule {
@@ -14,8 +14,21 @@ export class CoreModule {
 
     return {
       module: CoreModule,
-      providers: [configProvider],
-      exports: [configProvider],
+      providers: [
+        configProvider,
+        {
+          provide: APP_GUARD,
+          useClass: JwtGuard,
+        },
+        {
+          provide: APP_GUARD,
+          useClass: RolesGuard,
+        },
+        {
+          provide: APP_GUARD,
+          useClass: PoliciesGuard,
+        },
+      ],
     }
   }
 
@@ -33,8 +46,21 @@ export class CoreModule {
     return {
       module: CoreModule,
       imports: options?.imports || [],
-      providers: [configProvider],
-      exports: [configProvider],
+      providers: [
+        configProvider,
+        {
+          provide: APP_GUARD,
+          useClass: JwtGuard,
+        },
+        {
+          provide: APP_GUARD,
+          useClass: RolesGuard,
+        },
+        {
+          provide: APP_GUARD,
+          useClass: PoliciesGuard,
+        },
+      ],
     }
   }
 }

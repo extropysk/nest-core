@@ -1,8 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
 import { Action, Payload } from '../dto'
-
-export const CHECK_POLICIES_KEY = 'check_policy'
+import { CHECK_POLICIES_KEY } from '../decorators'
 
 interface IPolicyHandler {
   handle(ability: Ability): boolean
