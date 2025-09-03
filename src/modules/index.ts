@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { DynamicModule, Module, Provider } from '@nestjs/common'
+import { DynamicModule, Global, Module, Provider } from '@nestjs/common'
 import { CONFIG, Config } from '../providers'
 import { APP_GUARD } from '@nestjs/core'
 import { JwtGuard, PoliciesGuard, RolesGuard } from '../guards'
+import { JwtService } from '../services/jwt.service'
 
+@Global()
 @Module({})
 export class CoreModule {
   static forRoot(config: Config): DynamicModule {
@@ -28,7 +30,9 @@ export class CoreModule {
           provide: APP_GUARD,
           useClass: PoliciesGuard,
         },
+        JwtService,
       ],
+      exports: [JwtService],
     }
   }
 
@@ -60,7 +64,9 @@ export class CoreModule {
           provide: APP_GUARD,
           useClass: PoliciesGuard,
         },
+        JwtService,
       ],
+      exports: [JwtService],
     }
   }
 }
