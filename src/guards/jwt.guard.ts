@@ -39,7 +39,7 @@ export class JwtGuard implements CanActivate {
     try {
       const secret = crypto
         .createHash('sha256')
-        .update(this.config.secret)
+        .update(this.config.jwt.secret)
         .digest('hex')
         .slice(0, 32)
 
