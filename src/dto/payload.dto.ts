@@ -14,14 +14,14 @@ export interface Permission {
 }
 
 export interface Payload {
-  sub: string
+  id: string
   email: string
   roles?: string[]
   permissions?: Permission[]
 }
 
 export class PayloadDto implements Payload {
-  sub: string
+  id: string
   email: string
   roles?: string[]
 }
