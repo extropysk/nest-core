@@ -1,20 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common'
 import { CONFIG, type Config } from '../providers'
-import * as crypto from 'crypto'
-import * as jwt from 'jsonwebtoken'
+import { sign } from '../utils'
 
 @Injectable()
 export class JwtService {
   constructor(@Inject(CONFIG) private readonly config: Config) {}
 
   sign(payload: object) {
-    const secret = crypto
-      .createHash('sha256')
-      .update(this.config.jwt.secret)
-      .digest('hex')
-      .slice(0, 32)
-    return jwt.sign(payload, secret, {
-      expiresIn: (this.config.jwt.expiresIn as any) ?? '1h',
-    })
+    return sign(payload, this.config.jwt.secret, this.config.jwt.expiresIn)
   }
 }

@@ -6,11 +6,11 @@ import {
   UnauthorizedException,
 } from '@nestjs/common'
 import type { Request } from 'express'
-import * as crypto from 'crypto'
-import * as jwt from 'jsonwebtoken'
+
 import { type Config, CONFIG } from '../providers'
 import { Reflector } from '@nestjs/core'
-import { IS_PUBLIC_KEY } from '../decorators'
+import { PUBLIC_KEY } from '../decorators'
+import { verify } from '../utils'
 
 export const JWT_COOKIE_NAME = 'token'
 
@@ -22,7 +22,7 @@ export class JwtGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+    const isPublic = this.reflector.getAllAndOverride<boolean>(PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
     ])
@@ -37,13 +37,7 @@ export class JwtGuard implements CanActivate {
       throw new UnauthorizedException()
     }
     try {
-      const secret = crypto
-        .createHash('sha256')
-        .update(this.config.jwt.secret)
-        .digest('hex')
-        .slice(0, 32)
-
-      const payload = await jwt.verify(token, secret)
+      const payload = await verify(token, this.config.jwt.secret)
       if (typeof payload === 'string') {
         throw new Error('Payload is not valid')
       }
